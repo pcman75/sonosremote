@@ -801,11 +801,13 @@ class SoCo(object):
         response = self.__send_command(CONTENT_DIRECTORY_ENDPOINT, BROWSE_ACTION, body)
 
         try:
-            dom = XML.fromstring(response.encode('utf-8'))
+            #dom = XML.fromstring(response.encode('utf-8'))
+            dom = XML.fromstring(response)
             resultText = dom.findtext('.//Result')
             if not resultText: return queue
 
             resultDom  = XML.fromstring(resultText.encode('utf-8'))
+            #resultDom  = XML.fromstring(resultText)
             for element in resultDom.findall('.//{urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/}item'):
                 try:
                     item = {

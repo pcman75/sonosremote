@@ -15,12 +15,17 @@ class MainPage(webapp2.RequestHandler):
 
         track = sonos.get_current_track_info()
 
-        self.response.write(track['title'])
-
-        sonos.pause()
+        self.response.write(track)
+        
+        queue = sonos.get_queue()
+        for item in queue:
+            self.response.write(item['title'])
+            self.response.write('\r\n')
+        
+        #sonos.pause()
 
         # Play a stopped or paused track
-        sonos.play()
+        #sonos.play()
 
     def get(self):
         self.response.headers['Content-Type'] = 'text/plain'
