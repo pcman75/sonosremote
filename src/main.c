@@ -3,7 +3,13 @@
 #include "pebble_app.h"
 #include "pebble_fonts.h"
 
+#include "http.h"
 
+#define SONOSREMOTE_HTTP_COOKIE 726128123
+#define SONOSREMOTE_KEY_COMMAND 1 
+
+#define SONOSREMOTE_KEY_PLAY 1
+                                
 #define MY_UUID { 0x2D, 0xA4, 0xE0, 0xE5, 0xC8, 0x16, 0x4F, 0x63, 0x95, 0xDA, 0x42, 0x8D, 0x75, 0xD3, 0xE0, 0x65 }
 PBL_APP_INFO_SIMPLE(MY_UUID, "Button App", "Demo Corp", 1 /* App version */);
 
@@ -12,6 +18,23 @@ Window window;
 
 TextLayer textLayer;
 
+
+
+void failed(int32_t cookie, int http_status, void* context) 
+{
+}
+
+void success(int32_t cookie, int http_status, DictionaryIterator* received, void* context) 
+{
+}
+
+void reconnect(void* context) 
+{
+}
+
+void location(float latitude, float longitude, float altitude, float accuracy, void* context) 
+{
+}
 
 // Modify these common button handlers
 
@@ -35,6 +58,21 @@ void select_single_click_handler(ClickRecognizerRef recognizer, Window *window) 
   (void)window;
 
   text_layer_set_text(&textLayer, "Select");
+  
+  // Build the HTTP request
+	DictionaryIterator *body;
+	HTTPResult result = http_out_get("http://sonospebbleremote.appspot.com", SONOSREMOTE_HTTP_COOKIE, &body);
+	if(result != HTTP_OK) {
+		//TODO: error
+		return;
+	}
+	dict_write_int32(body, SONOSREMOTE_KEY_COMMAND, SONOSREMOTE_KEY_PLAY);
+	
+	// Send it.
+	if(http_out_send() != HTTP_OK) {
+		//TODO: error
+		return;
+	}
 }
 
 
@@ -77,6 +115,13 @@ void handle_init(AppContextRef ctx) {
 
   // Attach our desired button functionality
   window_set_click_config_provider(&window, (ClickConfigProvider) click_config_provider);
+  
+  http_register_callbacks((HTTPCallbacks){
+		.failure=failed,
+		.success=success,
+		.reconnect=reconnect,
+		.location=location
+	}, (void*)ctx);
 }
 
 
