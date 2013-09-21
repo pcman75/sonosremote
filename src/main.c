@@ -3,15 +3,15 @@
 #include "pebble_app.h"
 #include "pebble_fonts.h"
 
+#include "config.h"
 #include "http.h"
 #include "util.h"
 	
-#define SONOSREMOTE_HTTP_COOKIE 726128123
-#define SONOSREMOTE_KEY_COMMAND 1 
 
-#define SONOSREMOTE_KEY_PLAY 1
                                 
-#define MY_UUID { 0x2D, 0xA4, 0xE0, 0xE5, 0xC8, 0x16, 0x4F, 0x63, 0x95, 0xDA, 0x42, 0x8D, 0x75, 0xD3, 0xE0, 0x65 }
+//#define MY_UUID { 0x2D, 0xA4, 0xE0, 0xE5, 0xC8, 0x16, 0x4F, 0x63, 0x95, 0xDA, 0x42, 0x8D, 0x75, 0xD3, 0xE0, 0x65 }
+
+#define MY_UUID HTTP_UUID
 PBL_APP_INFO_SIMPLE(MY_UUID, "Sonos Remote", "Cosmin", 1 /* App version */);
 
 
@@ -23,19 +23,22 @@ TextLayer textLayer;
 
 void failed(int32_t cookie, int http_status, void* context) 
 {
+	text_layer_set_text(&textLayer, "Failed");
 }
 
 void success(int32_t cookie, int http_status, DictionaryIterator* received, void* context) 
 {
-	text_layer_set_text(&textLayer, "Success Play");
+	text_layer_set_text(&textLayer, "Success");
 }
 
 void reconnect(void* context) 
 {
+	text_layer_set_text(&textLayer, "Reconnect");
 }
 
 void location(float latitude, float longitude, float altitude, float accuracy, void* context) 
 {
+	text_layer_set_text(&textLayer, "Location");
 }
 
 // Modify these common button handlers
@@ -65,7 +68,7 @@ void select_single_click_handler(ClickRecognizerRef recognizer, Window *window) 
   
   // Build the HTTP request
 	DictionaryIterator *body;
-	HTTPResult result = http_out_get("http://sonospebbleremote.appspot.com", SONOSREMOTE_HTTP_COOKIE, &body);
+	HTTPResult result = http_out_get(SONOSREMOTE_WEBSEVICE, SONOSREMOTE_HTTP_COOKIE, &body);
 	if(result != HTTP_OK) 
 	{
 		strcpy(buf, "Err Select ");
