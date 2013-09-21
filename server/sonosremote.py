@@ -23,18 +23,20 @@ class MainPage(webapp2.RequestHandler):
         command = json.loads((self.request.body))
         
         if command['1'] == CMD_PLAY:
-            return self.play()
+            commandResult = self.play()
         elif command['1'] == CMD_STOP:
-            return self.stop()
+            commandResult = self.stop()
         elif command['1'] == CMD_PAUSE:
-            return self.pause() 
+            commandResult = self.pause() 
         elif command['1'] == CMD_PREV:
-            return self.previous()                    
+            commandResult = self.previous()                    
         elif command['1'] == CMD_NEXT:
-            return self.next() 
+            commandResult = self.next() 
         else:
-            return self.error()
+            commandResult = False;
 
+        return self.make_response(commandResult, command['1'])
+        
         # Pass in a URI to a media file to have it streamed through the Sonos speaker
         #sonos.play_uri('http://archive.org/download/TenD2005-07-16.flac16/TenD2005-07-16t10Wonderboy_64kb.mp3')
 
@@ -52,6 +54,14 @@ class MainPage(webapp2.RequestHandler):
         # Play a stopped or paused track
         #sonos.play()
 
+    def make_response(self, commandResult, command):
+        logger.info(commandResult)
+        if(commandResult == True):
+            commandResult = 1
+        else:
+            commandResult = 0           
+        self.response.write(json.dumps({"1": command, "2": ["b", commandResult]}))
+    
     def get(self):
         self.response.headers['Content-Type'] = 'text/plain'
         self.response.write('Sonos Remote Control')
@@ -59,23 +69,22 @@ class MainPage(webapp2.RequestHandler):
 
 
     def play(self):
-        self.sonos.play()
+        return self.sonos.play()
     
     def stop(self):
-        self.sonos.stop()
+        return self.sonos.stop()
 
     def pause(self):
-        self.sonos.pause()
+        return self.sonos.pause()
         
     def previous(self):
-    
-        self.sonos.previous()
+        return self.sonos.previous()
         
     def next(self):
-        self.sonos.next()
+        return self.sonos.next()
         
     def error(self):
-        self.sonos.stop()
+        return self.sonos.stop()
         
 def fix_path():
     # credit:  Nick Johnson of Google
