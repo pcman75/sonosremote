@@ -19,21 +19,28 @@ Window window;
 
 TextLayer textLayer;
 
-
+void debug(char* message, int status)
+{
+	static char debug_buf[20];
+	strcpy(debug_buf, message);
+	strcat(debug_buf, " ");
+	strcat(debug_buf, itoa(status));
+	text_layer_set_text(&textLayer, debug_buf);
+}
 
 void failed(int32_t cookie, int http_status, void* context) 
 {
-	text_layer_set_text(&textLayer, "Failed");
+	debug("Failed", http_status);
 }
 
 void success(int32_t cookie, int http_status, DictionaryIterator* received, void* context) 
 {
-	text_layer_set_text(&textLayer, "Success");
+	debug("Success", http_status);
 }
 
 void reconnect(void* context) 
 {
-	text_layer_set_text(&textLayer, "Reconnect");
+	debug("Reconnect", 0);
 }
 
 void location(float latitude, float longitude, float altitude, float accuracy, void* context) 
@@ -62,7 +69,7 @@ void select_single_click_handler(ClickRecognizerRef recognizer, Window *window) 
   (void)recognizer;
   (void)window;
 
-  static char buf[20];
+  
 	
   text_layer_set_text(&textLayer, "Select");
   
@@ -71,17 +78,17 @@ void select_single_click_handler(ClickRecognizerRef recognizer, Window *window) 
 	HTTPResult result = http_out_get(SONOSREMOTE_WEBSEVICE, SONOSREMOTE_HTTP_COOKIE, &body);
 	if(result != HTTP_OK) 
 	{
-		strcpy(buf, "Err Select ");
-		strcat(buf, itoa(result));
-		text_layer_set_text(&textLayer, buf);
+		debug("Err Get", result);
 		return;
 	}
 	dict_write_int32(body, SONOSREMOTE_KEY_COMMAND, SONOSREMOTE_KEY_PLAY);
 	
 	// Send it.
-	if(http_out_send() != HTTP_OK) 
+	result = http_out_send();
+	if( result != HTTP_OK) 
 	{
-		text_layer_set_text(&textLayer, "Error Send");
+		debug("Err Send", result);
+		text_layer_set_text(&textLayer, "Err Send");
 		return;
 	}
 }
