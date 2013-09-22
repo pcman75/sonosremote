@@ -134,6 +134,7 @@ void handle_init(AppContextRef ctx) {
   // Attach our desired button functionality
   window_set_click_config_provider(&window, (ClickConfigProvider) click_config_provider);
   
+  http_set_app_id(SONOSREMOTE_APP_ID);
   http_register_callbacks((HTTPCallbacks){
 		.failure=failed,
 		.success=success,
