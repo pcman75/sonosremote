@@ -2,6 +2,9 @@ import os
 import sys
 import webapp2
 import logging, traceback
+from sonosHttpebbleCommand import SonosHttpebbleCommand
+
+
 logger = logging.getLogger(__name__)
 
 class MainPage(webapp2.RequestHandler):
@@ -9,8 +12,8 @@ class MainPage(webapp2.RequestHandler):
     def post(self):
     
         command = self.request.body
-        httPebbleCommand = SonosHttPebbleCommand()
-        response = httPebbleCommand.callCommand(command)
+        httpebbleCommand = SonosHttpebbleCommand()
+        response = httpebbleCommand.callCommand(command)
         
         self.response.headers['Content-Type'] = 'application/json'
         return self.response.write(response)       

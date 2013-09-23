@@ -3,7 +3,7 @@ import json
 import logging, traceback
 logger = logging.getLogger(__name__)
 
-class SonosHttpebbleCommand():
+class SonosHttpebbleCommand:
 
     CMD_PLAY = 1
     CMD_STOP = 2
@@ -39,21 +39,25 @@ class SonosHttpebbleCommand():
         else:
             commandResult = False;
         
-        return self.make_json_response(commandResult, command['1'])
-    
-    def make_json_response(self, commandResult, command):
+        if type(commandResult) == bool:
+            httpeble_response = self.create_httpeble_response(commandResult, command['1'])
+        else:
+            httpeble_response = self.create_httpeble_response(commandResult.pop('success'), command['1'])
+            httpeble_response.update(commandResult)
+            
+        return httpeble_response
+            
+    def create_httpeble_response(self, commandResult, command):
         if(commandResult == True):
             commandResult = 1
         else:
             commandResult = 0           
-        return json.dumps({"1": command, "2": ["b", commandResult]})
+        return {"1": command, "2": ["b", commandResult]}
     
     def play(self):
-        print "Play"
         return self.sonos.play()
     
     def stop(self):
-        print "Stop"
         return self.sonos.stop()
 
     def pause(self):
@@ -76,10 +80,11 @@ class SonosHttpebbleCommand():
         trackInfo[str(self.TRACK_INFO_ALBUM)] = track['album']
         trackInfo[str(self.TRACK_INFO_POSITION)] = track['position']
         trackInfo[str(self.TRACK_INFO_ALBUM_ART)] = track['album_art']
-        print trackInfo
+        trackInfo['success'] = (track['title'] != '')
+        return trackInfo            
         
 if __name__ == "__main__":
     test = SonosHttpebbleCommand()
-    #print test.callCommand('{"1":1}')
+    print test.callCommand('{"1":1}')
     #print test.callCommand('{"1":2}')
     print test.callCommand('{"1":6}')
