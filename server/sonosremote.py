@@ -16,6 +16,7 @@ class MainPage(webapp2.RequestHandler):
         response = httpebbleCommand.callCommand(command)
         
         self.response.headers['Content-Type'] = 'application/json'
+        #self.response.headers['Expires'] = '0'
         return self.response.write(response)       
    
     def get(self):

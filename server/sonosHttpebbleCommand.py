@@ -85,6 +85,6 @@ class SonosHttpebbleCommand:
         
 if __name__ == "__main__":
     test = SonosHttpebbleCommand()
-    print test.callCommand('{"1":1}')
-    #print test.callCommand('{"1":2}')
+    #print test.callCommand('{"1":1}')
+    print test.callCommand('{"1":2}')
     print test.callCommand('{"1":6}')
