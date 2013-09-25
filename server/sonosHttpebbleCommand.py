@@ -52,7 +52,7 @@ class SonosHttpebbleCommand:
             commandResult = 1
         else:
             commandResult = 0           
-        return {"1": command, "2": ["b", commandResult]}
+        return {"1": ["B", command], "2": ["B", commandResult]}
     
     def play(self):
         return self.sonos.play()
