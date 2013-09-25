@@ -35,7 +35,35 @@ void failed(int32_t cookie, int http_status, void* context)
 
 void success(int32_t cookie, int http_status, DictionaryIterator* received, void* context) 
 {
-	debug("Success", http_status);
+	if(cookie != SONOSREMOTE_HTTP_COOKIE) 
+		return;
+	
+	Tuple* data_tuple = dict_find(received, SONOSREMOTE_KEY_COMMAND);
+	if(data_tuple) 
+	{
+		uint8_t command = value;
+		switch(command)
+		{
+			case SONOSREMOTE_CMD_PLAY:
+				debug("Success Play", http_status);
+				break;
+			case SONOSREMOTE_CMD_STOP:
+				debug("Success Stop", http_status);
+				break;
+			case SONOSREMOTE_CMD_PAUSE:
+				debug("Success Pause", http_status);
+				break;
+			case SONOSREMOTE_CMD_PREV:
+				debug("Success Prev", http_status);
+				break;
+			case SONOSREMOTE_CMD_NEXT:
+				debug("Success Next", http_status);
+				break;
+			case SONOSREMOTE_CMD_INFO:
+				debug("Success Info", http_status);
+				break;
+		}
+	}
 }
 
 void reconnect(void* context) 
@@ -81,7 +109,7 @@ void select_single_click_handler(ClickRecognizerRef recognizer, Window *window) 
 		debug("Err Get", result);
 		return;
 	}
-	dict_write_int32(body, SONOSREMOTE_KEY_COMMAND, SONOSREMOTE_KEY_PLAY);
+	dict_write_int32(body, SONOSREMOTE_KEY_COMMAND, SONOSREMOTE_CMD_PLAY);
 	
 	// Send it.
 	result = http_out_send();
