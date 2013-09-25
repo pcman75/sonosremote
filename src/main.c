@@ -41,7 +41,7 @@ void success(int32_t cookie, int http_status, DictionaryIterator* received, void
 	Tuple* data_tuple = dict_find(received, SONOSREMOTE_KEY_COMMAND);
 	if(data_tuple) 
 	{
-		uint8_t command = value;
+		uint8_t command = data_tuple->value->uint8;;
 		switch(command)
 		{
 			case SONOSREMOTE_CMD_PLAY:
