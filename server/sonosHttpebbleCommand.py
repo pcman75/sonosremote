@@ -55,22 +55,22 @@ class SonosHttpebbleCommand:
         return {"1": ["B", command], "2": ["B", commandResult]}
     
     def play(self):
-        return self.sonos.play()
+        return self.ensure_bool(self.sonos.play())
     
     def stop(self):
-        return self.sonos.stop()
+        return self.ensure_bool(self.sonos.stop())
 
     def pause(self):
-        return self.sonos.pause()
+        return self.ensure_bool(self.sonos.pause())
         
     def previous(self):
-        return self.sonos.previous()
+        return self.ensure_bool(self.sonos.previous())
         
     def next(self):
-        return self.sonos.next()
+        return self.ensure_bool(self.sonos.next())
         
-    def error(self):
-        return self.sonos.stop()
+    def stop(self):
+        return self.ensure_bool(self.sonos.stop())
     
     def getCurrentTrackInfo(self):
         track = self.sonos.get_current_track_info()
@@ -82,9 +82,13 @@ class SonosHttpebbleCommand:
         trackInfo[str(self.TRACK_INFO_ALBUM_ART)] = track['album_art']
         trackInfo['success'] = (track['title'] != '')
         return trackInfo            
+    
+    def ensure_bool(value):
+        result = True if value == True else False
+        return result
         
 if __name__ == "__main__":
     test = SonosHttpebbleCommand()
-    #print test.callCommand('{"1":1}')
+    print test.callCommand('{"1":1}')
     print test.callCommand('{"1":2}')
     print test.callCommand('{"1":6}')
