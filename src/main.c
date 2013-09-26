@@ -26,6 +26,57 @@ Window window;
 
 TextLayer textLayer;
 
+void dump_dict(DictionaryIterator* iter)
+{
+	char buf[500];
+	buf[0] = 0;
+	
+	Tuple *tuple = dict_read_first(iter);
+	while (tuple) 
+	{
+  		strcat(buf, itoa(tuple->key));
+		strcat(buf, ",");
+		
+		if(tuple->type == TUPLE_UINT)
+		{
+			if(tuple->length == 1)
+			{
+				strcat(buf, itoa(tuple->value->uint8));
+			}
+			else if(tuple->length == 2)
+			{
+				strcat(buf, itoa(tuple->value->uint16));
+			}
+			else if(tuple->length == 4)
+			{
+				strcat(buf, itoa(tuple->value->uint32));
+			}
+		}
+		else if (tuple->type == TUPLE_INT)
+		{
+			if(tuple->length == 1)
+			{
+				strcat(buf, itoa(tuple->value->int8));
+			}
+			else if(tuple->length == 2)
+			{
+				strcat(buf, itoa(tuple->value->int16));
+			}
+			else if(tuple->length == 4)
+			{
+				strcat(buf, itoa(tuple->value->int32));
+			}
+		}
+		else if (tuple->type == TUPLE_CSTRING)
+		{
+			strcat(buf, tuple->value->cstring);
+		}
+		strcat(buf, "I");
+		tuple = dict_read_next(iter);
+	}
+	//APP_LOG(APP_LOG_LEVEL_DEBUG_VERBOSE, "dump_dict");
+}
+
 void debug(char* message, int status)
 {
 	static char debug_buf[20];
@@ -49,7 +100,10 @@ void success(int32_t cookie, int http_status, DictionaryIterator* received, void
 	}
 	
 	//Tuple* data_tuple = dict_find(received, SONOSREMOTE_KEY_COMMAND);
-	Tuple* data_tuple = dict_read_first(received);
+	//Tuple* data_tuple = dict_read_first(received);
+	dump_dict(received);
+	
+	/*
 	if(data_tuple) 
 	{
 		uint8_t command = data_tuple->value->uint8;
@@ -80,8 +134,10 @@ void success(int32_t cookie, int http_status, DictionaryIterator* received, void
 				debug("Unkown", command);
 		}
 	}
+	
 	else
 		debug("Not found", 0);
+	*/
 }
 
 void reconnect(void* context) 
@@ -174,7 +230,7 @@ void handle_init(AppContextRef ctx)
 
   text_layer_init(&textLayer, window.layer.frame);
   debug("Sonos", HTTP_NOT_ENOUGH_STORAGE);
-  text_layer_set_font(&textLayer, fonts_get_system_font(FONT_KEY_GOTHAM_30_BLACK));
+  text_layer_set_font(&textLayer, fonts_get_system_font(FONT_KEY_GOTHIC_14));
   layer_add_child(&window.layer, &textLayer.layer);
 
   // Attach our desired button functionality
