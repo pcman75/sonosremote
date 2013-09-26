@@ -57,6 +57,7 @@ class SonosHttpebbleCommand:
     def play(self):
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         return (self.sonos.play() if True else False)
     
     def stop(self):
@@ -73,6 +74,24 @@ class SonosHttpebbleCommand:
         
     def error(self):
         return (self.sonos.stop() if True else False)
+=======
+        return self.ensure_bool(self.sonos.play())
+    
+    def stop(self):
+        return self.ensure_bool(self.sonos.stop())
+
+    def pause(self):
+        return self.ensure_bool(self.sonos.pause())
+        
+    def previous(self):
+        return self.ensure_bool(self.sonos.previous())
+        
+    def next(self):
+        return self.ensure_bool(self.sonos.next())
+        
+    def stop(self):
+        return self.ensure_bool(self.sonos.stop())
+>>>>>>> 4d2c5b803b4564d4d7a398d459265c8f35d9bf8b
 =======
         return self.ensure_bool(self.sonos.play())
     
