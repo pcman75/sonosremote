@@ -83,7 +83,7 @@ class SonosHttpebbleCommand:
         trackInfo['success'] = (track['title'] != '')
         return trackInfo            
     
-    def ensure_bool(value):
+    def ensure_bool(self, value):
         result = True if value == True else False
         return result
         
