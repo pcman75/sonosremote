@@ -28,7 +28,7 @@ def fix_path():
     sys.path.append(os.path.join(os.path.dirname(__file__), 'requests'))
     
 fix_path()
-application = webapp2.WSGIApplication([('/', MainPage),], debug=True)
+application = webapp2.WSGIApplication([(r'.*', MainPage),], debug=True)
 
 
         # Pass in a URI to a media file to have it streamed through the Sonos speaker

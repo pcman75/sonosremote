@@ -55,22 +55,60 @@ class SonosHttpebbleCommand:
         return {"1": ["B", command], "2": ["B", commandResult]}
     
     def play(self):
-        return self.sonos.play()
+<<<<<<< HEAD
+<<<<<<< HEAD
+        return (self.sonos.play() if True else False)
     
     def stop(self):
-        return self.sonos.stop()
+        return (self.sonos.stop() if True else False)
 
     def pause(self):
-        return self.sonos.pause()
+        return (self.sonos.pause() if True else False)
         
     def previous(self):
-        return self.sonos.previous()
+        return (self.sonos.previous() if True else False)
         
     def next(self):
-        return self.sonos.next()
+        return (self.sonos.next() if True else False)
         
     def error(self):
-        return self.sonos.stop()
+        return (self.sonos.stop() if True else False)
+=======
+        return self.ensure_bool(self.sonos.play())
+    
+    def stop(self):
+        return self.ensure_bool(self.sonos.stop())
+
+    def pause(self):
+        return self.ensure_bool(self.sonos.pause())
+        
+    def previous(self):
+        return self.ensure_bool(self.sonos.previous())
+        
+    def next(self):
+        return self.ensure_bool(self.sonos.next())
+        
+    def stop(self):
+        return self.ensure_bool(self.sonos.stop())
+>>>>>>> 4d2c5b803b4564d4d7a398d459265c8f35d9bf8b
+=======
+        return self.ensure_bool(self.sonos.play())
+    
+    def stop(self):
+        return self.ensure_bool(self.sonos.stop())
+
+    def pause(self):
+        return self.ensure_bool(self.sonos.pause())
+        
+    def previous(self):
+        return self.ensure_bool(self.sonos.previous())
+        
+    def next(self):
+        return self.ensure_bool(self.sonos.next())
+        
+    def stop(self):
+        return self.ensure_bool(self.sonos.stop())
+>>>>>>> 4d2c5b803b4564d4d7a398d459265c8f35d9bf8b
     
     def getCurrentTrackInfo(self):
         track = self.sonos.get_current_track_info()
@@ -82,9 +120,13 @@ class SonosHttpebbleCommand:
         trackInfo[str(self.TRACK_INFO_ALBUM_ART)] = track['album_art']
         trackInfo['success'] = (track['title'] != '')
         return trackInfo            
+    
+    def ensure_bool(value):
+        result = True if value == True else False
+        return result
         
 if __name__ == "__main__":
     test = SonosHttpebbleCommand()
-    #print test.callCommand('{"1":1}')
+    print test.callCommand('{"1":1}')
     print test.callCommand('{"1":2}')
     print test.callCommand('{"1":6}')

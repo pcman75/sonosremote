@@ -14,10 +14,68 @@
 #define MY_UUID HTTP_UUID
 PBL_APP_INFO_SIMPLE(MY_UUID, "Sonos Remote", "Cosmin", 1 /* App version */);
 
+typedef struct
+{
+	bool mute;
+	bool playing;
+} SonosStatus;
+
+SonosStatus sonosStatus = {.mute = false, .playing = false};
 
 Window window;
 
 TextLayer textLayer;
+
+void dump_dict(DictionaryIterator* iter)
+{
+	char buf[500];
+	buf[0] = 0;
+	
+	Tuple *tuple = dict_read_first(iter);
+	while (tuple) 
+	{
+  		strcat(buf, itoa(tuple->key));
+		strcat(buf, ",");
+		
+		if(tuple->type == TUPLE_UINT)
+		{
+			if(tuple->length == 1)
+			{
+				strcat(buf, itoa(tuple->value->uint8));
+			}
+			else if(tuple->length == 2)
+			{
+				strcat(buf, itoa(tuple->value->uint16));
+			}
+			else if(tuple->length == 4)
+			{
+				strcat(buf, itoa(tuple->value->uint32));
+			}
+		}
+		else if (tuple->type == TUPLE_INT)
+		{
+			if(tuple->length == 1)
+			{
+				strcat(buf, itoa(tuple->value->int8));
+			}
+			else if(tuple->length == 2)
+			{
+				strcat(buf, itoa(tuple->value->int16));
+			}
+			else if(tuple->length == 4)
+			{
+				strcat(buf, itoa(tuple->value->int32));
+			}
+		}
+		else if (tuple->type == TUPLE_CSTRING)
+		{
+			strcat(buf, tuple->value->cstring);
+		}
+		strcat(buf, "I");
+		tuple = dict_read_next(iter);
+	}
+	//APP_LOG(APP_LOG_LEVEL_DEBUG_VERBOSE, "dump_dict");
+}
 
 void debug(char* message, int status)
 {
@@ -35,23 +93,33 @@ void failed(int32_t cookie, int http_status, void* context)
 
 void success(int32_t cookie, int http_status, DictionaryIterator* received, void* context) 
 {
-	if(cookie != SONOSREMOTE_HTTP_COOKIE) 
+	if(cookie != SONOSREMOTE_HTTP_COOKIE)
+	{
+		debug("Success not mine", http_status);
 		return;
+	}
 	
-	Tuple* data_tuple = dict_find(received, SONOSREMOTE_KEY_COMMAND);
+	//Tuple* data_tuple = dict_find(received, SONOSREMOTE_KEY_COMMAND);
+	//Tuple* data_tuple = dict_read_first(received);
+	dump_dict(received);
+	
+	/*
 	if(data_tuple) 
 	{
-		uint8_t command = data_tuple->value->uint8;;
+		uint8_t command = data_tuple->value->uint8;
 		switch(command)
 		{
 			case SONOSREMOTE_CMD_PLAY:
 				debug("Success Play", http_status);
+				sonosStatus.playing = true;
 				break;
 			case SONOSREMOTE_CMD_STOP:
 				debug("Success Stop", http_status);
+				sonosStatus.playing = false;
 				break;
 			case SONOSREMOTE_CMD_PAUSE:
 				debug("Success Pause", http_status);
+				sonosStatus.playing = false;			
 				break;
 			case SONOSREMOTE_CMD_PREV:
 				debug("Success Prev", http_status);
@@ -62,8 +130,14 @@ void success(int32_t cookie, int http_status, DictionaryIterator* received, void
 			case SONOSREMOTE_CMD_INFO:
 				debug("Success Info", http_status);
 				break;
+			default:
+				debug("Unkown", command);
 		}
 	}
+	
+	else
+		debug("Not found", 0);
+	*/
 }
 
 void reconnect(void* context) 
@@ -76,56 +150,55 @@ void location(float latitude, float longitude, float altitude, float accuracy, v
 	text_layer_set_text(&textLayer, "Location");
 }
 
-// Modify these common button handlers
-
-void up_single_click_handler(ClickRecognizerRef recognizer, Window *window) {
-  (void)recognizer;
-  (void)window;
-  text_layer_set_text(&textLayer, "Up");
-}
-
-
-void down_single_click_handler(ClickRecognizerRef recognizer, Window *window) {
-  (void)recognizer;
-  (void)window;
-  text_layer_set_text(&textLayer, "Down");
-
-}
-
-
-void select_single_click_handler(ClickRecognizerRef recognizer, Window *window) {
-  (void)recognizer;
-  (void)window;
-
-  
-	
-  text_layer_set_text(&textLayer, "Select");
-  
-  // Build the HTTP request
+void send_sonos_command(int command)
+{
+	// Build the HTTP request
 	DictionaryIterator *body;
-	HTTPResult result = http_out_get(SONOSREMOTE_WEBSEVICE, SONOSREMOTE_HTTP_COOKIE, &body);
-	if(result != HTTP_OK) 
+	char sonosWebService[60];
+	strcpy(sonosWebService, SONOSREMOTE_WEBSEVICE);
+	strcat(sonosWebService, "/");
+	strcat(sonosWebService, itoa(rand()));
+	HTTPResult result = http_out_get(sonosWebService, SONOSREMOTE_HTTP_COOKIE, &body);
+	if(result == HTTP_OK) 
+	{
+		dict_write_uint8(body, SONOSREMOTE_KEY_COMMAND, command);
+		// Send it.
+		result = http_out_send();
+		if( result != HTTP_OK) 
+		{
+			debug("Err Send", result);
+		}
+	}
+	else
 	{
 		debug("Err Get", result);
-		return;
-	}
-	dict_write_int32(body, SONOSREMOTE_KEY_COMMAND, SONOSREMOTE_CMD_PLAY);
-	
-	// Send it.
-	result = http_out_send();
-	if( result != HTTP_OK) 
-	{
-		debug("Err Send", result);
-		text_layer_set_text(&textLayer, "Err Send");
-		return;
 	}
 }
 
+void up_single_click_handler(ClickRecognizerRef recognizer, Window *window) 
+{
+	send_sonos_command(SONOSREMOTE_CMD_PREV);
+}
 
-void select_long_click_handler(ClickRecognizerRef recognizer, Window *window) {
-  (void)recognizer;
-  (void)window;
-  text_layer_set_text(&textLayer, "Select Long");
+
+void down_single_click_handler(ClickRecognizerRef recognizer, Window *window) 
+{
+	send_sonos_command(SONOSREMOTE_CMD_NEXT);	
+}
+
+
+void select_single_click_handler(ClickRecognizerRef recognizer, Window *window) 
+{
+	if(sonosStatus.playing)
+		send_sonos_command(SONOSREMOTE_CMD_PAUSE);		
+	else
+		send_sonos_command(SONOSREMOTE_CMD_PLAY);
+}
+
+
+void select_long_click_handler(ClickRecognizerRef recognizer, Window *window) 
+{
+	send_sonos_command(SONOSREMOTE_CMD_MUTE);
 }
 
 
@@ -148,15 +221,16 @@ void click_config_provider(ClickConfig **config, Window *window) {
 
 // Standard app initialisation
 
-void handle_init(AppContextRef ctx) {
+void handle_init(AppContextRef ctx) 
+{
   (void)ctx;
 
   window_init(&window, "Button App");
   window_stack_push(&window, true /* Animated */);
 
   text_layer_init(&textLayer, window.layer.frame);
-  text_layer_set_text(&textLayer, "Hello World");
-  text_layer_set_font(&textLayer, fonts_get_system_font(FONT_KEY_GOTHAM_30_BLACK));
+  debug("Sonos", HTTP_NOT_ENOUGH_STORAGE);
+  text_layer_set_font(&textLayer, fonts_get_system_font(FONT_KEY_GOTHIC_14));
   layer_add_child(&window.layer, &textLayer.layer);
 
   // Attach our desired button functionality
@@ -169,19 +243,24 @@ void handle_init(AppContextRef ctx) {
 		.reconnect=reconnect,
 		.location=location
 	}, (void*)ctx);
+	
+	srand(time(NULL));
 }
 
 
-void pbl_main(void *params) {
-  PebbleAppHandlers handlers = {
+void pbl_main(void *params) 
+{
+  PebbleAppHandlers handlers = 
+  {
     .init_handler = &handle_init,
-	.messaging_info = {
-			.buffer_sizes = {
+	.messaging_info = 
+	{
+			.buffer_sizes = 
+			{
 				.inbound = 124,
 				.outbound = 256,
 			}
 	}
-		
   };
   app_event_loop(params, &handlers);
 }

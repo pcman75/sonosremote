@@ -54,7 +54,8 @@ static void app_send_failed(DictionaryIterator* failed, AppMessageResult reason,
 static void app_received(DictionaryIterator* received, void* context);
 static void app_dropped(void* context, AppMessageResult reason);
 
-HTTPResult http_out_get(const char* url, int32_t cookie, DictionaryIterator **iter_out) {
+HTTPResult http_out_get(const char* url, int32_t cookie, DictionaryIterator **iter_out) 
+{
     AppMessageResult app_result = app_message_out_get(iter_out);
     if(app_result != APP_MSG_OK) {
         return app_result;
