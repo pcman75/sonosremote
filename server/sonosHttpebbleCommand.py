@@ -55,26 +55,6 @@ class SonosHttpebbleCommand:
         return {"1": ["B", command], "2": ["B", commandResult]}
     
     def play(self):
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-        return (self.sonos.play() if True else False)
-    
-    def stop(self):
-        return (self.sonos.stop() if True else False)
-
-    def pause(self):
-        return (self.sonos.pause() if True else False)
-        
-    def previous(self):
-        return (self.sonos.previous() if True else False)
-        
-    def next(self):
-        return (self.sonos.next() if True else False)
-        
-    def error(self):
-        return (self.sonos.stop() if True else False)
-=======
         return self.ensure_bool(self.sonos.play())
     
     def stop(self):
@@ -91,44 +71,7 @@ class SonosHttpebbleCommand:
         
     def stop(self):
         return self.ensure_bool(self.sonos.stop())
->>>>>>> 4d2c5b803b4564d4d7a398d459265c8f35d9bf8b
-=======
-        return self.ensure_bool(self.sonos.play())
-    
-    def stop(self):
-        return self.ensure_bool(self.sonos.stop())
-
-    def pause(self):
-        return self.ensure_bool(self.sonos.pause())
-        
-    def previous(self):
-        return self.ensure_bool(self.sonos.previous())
-        
-    def next(self):
-        return self.ensure_bool(self.sonos.next())
-        
-    def stop(self):
-        return self.ensure_bool(self.sonos.stop())
->>>>>>> 4d2c5b803b4564d4d7a398d459265c8f35d9bf8b
-=======
-        return self.ensure_bool(self.sonos.play())
-    
-    def stop(self):
-        return self.ensure_bool(self.sonos.stop())
-
-    def pause(self):
-        return self.ensure_bool(self.sonos.pause())
-        
-    def previous(self):
-        return self.ensure_bool(self.sonos.previous())
-        
-    def next(self):
-        return self.ensure_bool(self.sonos.next())
-        
-    def stop(self):
-        return self.ensure_bool(self.sonos.stop())
->>>>>>> 4d2c5b803b4564d4d7a398d459265c8f35d9bf8b
-    
+   
     def getCurrentTrackInfo(self):
         track = self.sonos.get_current_track_info()
         trackInfo = {}
