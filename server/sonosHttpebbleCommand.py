@@ -45,7 +45,7 @@ class SonosHttpebbleCommand:
             httpeble_response = self.create_httpeble_response(commandResult.pop('success'), command['1'])
             httpeble_response.update(commandResult)
             
-        return httpeble_response
+        return json.dumps(httpeble_response)
             
     def create_httpeble_response(self, commandResult, command):
         if(commandResult == True):
