@@ -110,31 +110,45 @@ void success(int32_t cookie, int http_status, DictionaryIterator* received, void
 	if(data_tuple) 
 	{
 		uint8_t command = data_tuple->value->uint8;
-		switch(command)
+		
+		data_tuple = dict_find(received, SONOSREMOTE_KEY_COMMAND);
+		if(data_tuple)
 		{
-			case SONOSREMOTE_CMD_PLAY:
-				debug("Success Play", http_status);
-				sonosStatus.playing = true;
-				break;
-			case SONOSREMOTE_CMD_STOP:
-				debug("Success Stop", http_status);
-				sonosStatus.playing = false;
-				break;
-			case SONOSREMOTE_CMD_PAUSE:
-				debug("Success Pause", http_status);
-				sonosStatus.playing = false;			
-				break;
-			case SONOSREMOTE_CMD_PREV:
-				debug("Success Prev", http_status);
-				break;
-			case SONOSREMOTE_CMD_NEXT:
-				debug("Success Next", http_status);
-				break;
-			case SONOSREMOTE_CMD_INFO:
-				debug("Success Info", http_status);
-				break;
-			default:
-				debug("Unkown", command);
+			uint8_t commandSuccess = data_tuple->value->uint8;
+			if(commandSuccess)
+			{
+				switch(command)
+				{
+					case SONOSREMOTE_CMD_PLAY:
+						debug("Success Play", http_status);
+						sonosStatus.playing = true;
+						break;
+					case SONOSREMOTE_CMD_STOP:
+						debug("Success Stop", http_status);
+						sonosStatus.playing = false;
+						break;
+					case SONOSREMOTE_CMD_PAUSE:
+						debug("Success Pause", http_status);
+						sonosStatus.playing = false;			
+						break;
+					case SONOSREMOTE_CMD_PREV:
+						debug("Success Prev", http_status);
+						break;
+					case SONOSREMOTE_CMD_NEXT:
+						debug("Success Next", http_status);
+						break;
+					case SONOSREMOTE_CMD_INFO:
+						data_tuple = dict_find(received, SONOSREMOTE_KEY_TRACK_INFO_TITLE);
+						if(data_tuple)
+						{
+							char* title = data_tuple->value->cstring;
+							text_layer_set_text(&textLayer, title);
+						}
+						break;
+					default:
+						debug("Unkown", command);
+				}
+			}
 		}
 	}
 	else
