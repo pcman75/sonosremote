@@ -105,11 +105,8 @@ void success(int32_t cookie, int http_status, DictionaryIterator* received, void
 		return;
 	}
 	
-	//Tuple* data_tuple = dict_find(received, SONOSREMOTE_KEY_COMMAND);
-	//Tuple* data_tuple = dict_read_first(received);
-	dump_dict(received);
-	
-	/*
+	Tuple* data_tuple = dict_find(received, SONOSREMOTE_KEY_COMMAND);
+		
 	if(data_tuple) 
 	{
 		uint8_t command = data_tuple->value->uint8;
@@ -140,10 +137,8 @@ void success(int32_t cookie, int http_status, DictionaryIterator* received, void
 				debug("Unkown", command);
 		}
 	}
-	
 	else
 		debug("Not found", 0);
-	*/
 }
 
 void reconnect(void* context) 
@@ -151,16 +146,11 @@ void reconnect(void* context)
 	debug("Reconnect", 0);
 }
 
-void location(float latitude, float longitude, float altitude, float accuracy, void* context) 
-{
-	text_layer_set_text(&textLayer, "Location");
-}
-
 void send_sonos_command(int command)
 {
 	// Build the HTTP request
 	DictionaryIterator *body;
-	char sonosWebService[60];
+	static char sonosWebService[60];
 	strcpy(sonosWebService, SONOSREMOTE_WEBSEVICE);
 	strcat(sonosWebService, "/");
 	strcat(sonosWebService, itoa(rand()));
@@ -190,6 +180,7 @@ void up_single_click_handler(ClickRecognizerRef recognizer, Window *window)
 void down_single_click_handler(ClickRecognizerRef recognizer, Window *window) 
 {
 	send_sonos_command(SONOSREMOTE_CMD_NEXT);	
+	//send_test();	
 }
 
 
@@ -204,7 +195,7 @@ void select_single_click_handler(ClickRecognizerRef recognizer, Window *window)
 
 void select_long_click_handler(ClickRecognizerRef recognizer, Window *window) 
 {
-	send_sonos_command(SONOSREMOTE_CMD_MUTE);
+	send_sonos_command(SONOSREMOTE_CMD_INFO);
 }
 
 
@@ -235,8 +226,8 @@ void handle_init(AppContextRef ctx)
   window_stack_push(&window, true /* Animated */);
 
   text_layer_init(&textLayer, window.layer.frame);
-  debug("Sonos", HTTP_NOT_ENOUGH_STORAGE);
-  text_layer_set_font(&textLayer, fonts_get_system_font(FONT_KEY_GOTHIC_14));
+  debug("Sonos", 0);
+  text_layer_set_font(&textLayer, fonts_get_system_font(FONT_KEY_GOTHIC_18));
   layer_add_child(&window.layer, &textLayer.layer);
 
   // Attach our desired button functionality
@@ -246,11 +237,11 @@ void handle_init(AppContextRef ctx)
   http_register_callbacks((HTTPCallbacks){
 		.failure=failed,
 		.success=success,
-		.reconnect=reconnect,
-		.location=location
+		.reconnect=reconnect
 	}, (void*)ctx);
 	
 	srand(time(NULL));
+	send_sonos_command(SONOSREMOTE_CMD_INFO);
 }
 
 
