@@ -639,8 +639,8 @@ class SoCo(object):
         """
         response = self.__send_command(TRANSPORT_ENDPOINT, GET_CUR_TRACK_ACTION, GET_CUR_TRACK_BODY)
 
-        dom = XML.fromstring(response.encode('utf-8'))
-
+        #dom = XML.fromstring(response.encode('utf-8'))
+        dom = XML.fromstring(response)
         track = {'title': '', 'artist': '', 'album': '', 'album_art': '',
             'position': ''}
 

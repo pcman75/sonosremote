@@ -78,8 +78,8 @@ class SonosHttpebbleCommand:
         trackInfo[str(self.TRACK_INFO_TITLE)] = track['title']
         trackInfo[str(self.TRACK_INFO_ARTIST)] = track['artist']
         trackInfo[str(self.TRACK_INFO_ALBUM)] = track['album']
-        trackInfo[str(self.TRACK_INFO_POSITION)] = track['position']
-        trackInfo[str(self.TRACK_INFO_ALBUM_ART)] = track['album_art']
+        #rackInfo[str(self.TRACK_INFO_POSITION)] = track['position']
+        #trackInfo[str(self.TRACK_INFO_ALBUM_ART)] = track['album_art']
         trackInfo['success'] = (track['title'] != '')
         return trackInfo            
     
