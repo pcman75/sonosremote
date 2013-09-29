@@ -7,5 +7,6 @@ include
 pebble_app.ld
 lib
 tools
-waf
 wscript
+waf
+*.command
