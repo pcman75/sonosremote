@@ -1,1 +1,11 @@
+.*
+!/.gitignore
 *.pyc
+
+build/
+include
+pebble_app.ld
+lib
+tools
+waf
+wscript
