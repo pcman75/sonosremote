@@ -20,6 +20,7 @@ SonosStatus sonosStatus = {.mute = false, .playing = false};
 
 Window window;
 TextLayer textLayer;
+ActionBarLayer action_bar;
 
 void failed(int32_t cookie, int http_status, void* context) 
 {
@@ -144,7 +145,8 @@ void select_long_click_handler(ClickRecognizerRef recognizer, Window *window)
 
 // This usually won't need to be modified
 
-void click_config_provider(ClickConfig **config, Window *window) {
+void click_config_provider(ClickConfig **config, Window *window) 
+{
   (void)window;
 
   config[BUTTON_ID_SELECT]->click.handler = (ClickHandler) select_single_click_handler;
@@ -159,6 +161,19 @@ void click_config_provider(ClickConfig **config, Window *window) {
 }
 
 
+// WindowHandlers
+void handle_main_appear(Window *window)
+{
+    // We need to add the action_bar when the main-window appears. If we do this in handle_init it picks up wrong window-bounds and the size doesn't fit.
+    action_bar_layer_add_to_window(&action_bar, window);
+}
+
+void handle_main_disappear(Window *window)
+{
+    // Since we add the layer on each appear, we remove it on each disappear.
+    action_bar_layer_remove_from_window(&action_bar);
+}
+
 // Standard app initialisation
 
 void handle_init(AppContextRef ctx) 
@@ -166,15 +181,32 @@ void handle_init(AppContextRef ctx)
   (void)ctx;
 
   window_init(&window, "Sonos");
+  window_set_window_handlers(&window, (WindowHandlers) {
+        .appear = (WindowHandler)handle_main_appear,
+        .disappear = (WindowHandler)handle_main_disappear
+    });
+  
   window_stack_push(&window, true /* Animated */);
 
   text_layer_init(&textLayer, window.layer.frame);
   debug("Sonos", 0);
   text_layer_set_font(&textLayer, fonts_get_system_font(FONT_KEY_GOTHIC_18));
   layer_add_child(&window.layer, &textLayer.layer);
-
   // Attach our desired button functionality
-  window_set_click_config_provider(&window, (ClickConfigProvider) click_config_provider);
+  //window_set_click_config_provider(&window, (ClickConfigProvider) click_config_provider);
+
+  // Initialize the action bar:
+  action_bar_layer_init(&action_bar);
+  // Associate the action bar with the window:
+  //action_bar_layer_add_to_window(&action_bar, &window);
+  // Set the click config provider:
+  action_bar_layer_set_click_config_provider(&action_bar,
+                                             (ClickConfigProvider) click_config_provider);
+  // Set the icons:
+  // The loading the icons is omitted for brevity... See HeapBitmap.
+  //action_bar_layer_set_icon(&action_bar, BUTTON_ID_UP, &my_icon_previous);
+  //action_bar_layer_set_icon(&action_bar, BUTTON_ID_DOWN, &my_icon_next);
+  layer_add_child(&window.layer, &action_bar.layer);
   
   http_set_app_id(SONOSREMOTE_APP_ID);
   http_register_callbacks((HTTPCallbacks){
