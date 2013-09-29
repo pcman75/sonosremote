@@ -236,7 +236,7 @@ void handle_init(AppContextRef ctx)
 {
   (void)ctx;
 
-  window_init(&window, "Button App");
+  window_init(&window, "Sonos");
   window_stack_push(&window, true /* Animated */);
 
   text_layer_init(&textLayer, window.layer.frame);
@@ -268,7 +268,7 @@ void pbl_main(void *params)
 	{
 			.buffer_sizes = 
 			{
-				.inbound = 256,
+				.inbound = 124,
 				.outbound = 256,
 			}
 	}

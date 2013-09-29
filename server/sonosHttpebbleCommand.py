@@ -1,4 +1,5 @@
 from soco import SoCo
+from unidecode import unidecode
 import json
 import logging, traceback
 logger = logging.getLogger(__name__)
@@ -44,8 +45,9 @@ class SonosHttpebbleCommand:
         else:
             httpeble_response = self.create_httpeble_response(commandResult.pop('success'), command['1'])
             httpeble_response.update(commandResult)
-            
-        return json.dumps(httpeble_response)
+        
+        asciiCommand = unidecode(json.dumps(httpeble_response).decode('unicode-escape')).replace("'", ' ')
+        return asciiCommand
             
     def create_httpeble_response(self, commandResult, command):
         if(commandResult == True):
@@ -75,9 +77,9 @@ class SonosHttpebbleCommand:
     def getCurrentTrackInfo(self):
         track = self.sonos.get_current_track_info()
         trackInfo = {}
-        trackInfo[str(self.TRACK_INFO_TITLE)] = track['title']
-        trackInfo[str(self.TRACK_INFO_ARTIST)] = track['artist']
-        trackInfo[str(self.TRACK_INFO_ALBUM)] = track['album']
+        trackInfo[str(self.TRACK_INFO_TITLE)] = track['title'][:20]
+        trackInfo[str(self.TRACK_INFO_ARTIST)] = track['artist'][:20]
+        trackInfo[str(self.TRACK_INFO_ALBUM)] = track['album'][:20]
         #rackInfo[str(self.TRACK_INFO_POSITION)] = track['position']
         #trackInfo[str(self.TRACK_INFO_ALBUM_ART)] = track['album_art']
         trackInfo['success'] = (track['title'] != '')
