@@ -1,6 +1,11 @@
 {
     "media": [
         {
+            "defName": "SONOS_APP_ICON",
+            "type": "png",
+            "file": "images/sonos.png"
+        },
+        {
             "defName": "DUMMY",
             "type": "raw",
             "file": "data/resource_map.json"

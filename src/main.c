@@ -12,7 +12,7 @@
 //#define MY_UUID { 0x2D, 0xA4, 0xE0, 0xE5, 0xC8, 0x16, 0x4F, 0x63, 0x95, 0xDA, 0x42, 0x8D, 0x75, 0xD3, 0xE0, 0x65 }
 
 #define MY_UUID HTTP_UUID
-PBL_APP_INFO_SIMPLE(MY_UUID, "Sonos Remote", "Cosmin", 1 /* App version */);
+PBL_APP_INFO(MY_UUID, "Sonos Remote", "Cosmin", 1, 0, RESOURCE_ID_SONOS_APP_ICON, APP_INFO_STANDARD_APP);
 
 typedef struct
 {

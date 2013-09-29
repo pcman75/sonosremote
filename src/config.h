@@ -5,7 +5,7 @@
 //#define SONOSREMOTE_WEBSEVICE "192.168.1.104:8080"
 //#define SONOSREMOTE_WEBSEVICE "http://bfree.ro/sonos/SonosPebble.php"
 	
-#define SONOSREMOTE_APP_ID 2813748771
+#define SONOSREMOTE_APP_ID 281374877
 #define SONOSREMOTE_HTTP_COOKIE 726128123
 
 //commands:	
