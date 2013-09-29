@@ -1,8 +1,8 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define SONOSREMOTE_WEBSEVICE "http://sonospebbleremote.appspot.com"
-//#define SONOSREMOTE_WEBSEVICE "http://192.168.1.104:8080"
+//#define SONOSREMOTE_WEBSEVICE "http://sonospebbleremote.appspot.com"
+#define SONOSREMOTE_WEBSEVICE "http://192.168.1.104:8080"
 //#define SONOSREMOTE_WEBSEVICE "http://bfree.ro/sonos/SonosPebble.php"
 	
 #define SONOSREMOTE_APP_ID 281374877

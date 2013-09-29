@@ -1,4 +1,3 @@
-
 #include "pebble_os.h"
 #include "pebble_app.h"
 #include "pebble_fonts.h"
@@ -6,10 +5,7 @@
 #include "config.h"
 #include "http.h"
 #include "util.h"
-	
-
-                                
-//#define MY_UUID { 0x2D, 0xA4, 0xE0, 0xE5, 0xC8, 0x16, 0x4F, 0x63, 0x95, 0xDA, 0x42, 0x8D, 0x75, 0xD3, 0xE0, 0x65 }
+#include "debug.h"
 
 #define MY_UUID HTTP_UUID
 PBL_APP_INFO(MY_UUID, "Sonos Remote", "Cosmin", 1, 0, RESOURCE_ID_SONOS_APP_ICON, APP_INFO_STANDARD_APP);
@@ -23,74 +19,7 @@ typedef struct
 SonosStatus sonosStatus = {.mute = false, .playing = false};
 
 Window window;
-
 TextLayer textLayer;
-
-void debug(char* message, int status)
-{
-	static char debug_buf[20];
-	strcpy(debug_buf, message);
-	strcat(debug_buf, " ");
-	strcat(debug_buf, itoa(status));
-	text_layer_set_text(&textLayer, debug_buf);
-}
-
-void dump_dict(DictionaryIterator* iter)
-{
-	static char buf[500];
-	static char row[50];
-	
-	buf[0] = 0;
-	
-	Tuple *tuple = dict_read_first(iter);
-	while (tuple) 
-	{	
-		unsigned int uvalue = 0;
-  		if(tuple->type == TUPLE_UINT)
-		{			 
-			if(tuple->length == 1)
-			{
-				uvalue = tuple->value->uint8;
-			}
-			else if(tuple->length == 2)
-			{
-				uvalue = tuple->value->uint16;
-			}
-			else if(tuple->length == 4)
-			{
-				uvalue = tuple->value->uint32;
-			}
-			snprintf(row, 50, "[%u,%u]", (unsigned)tuple->key, uvalue);
-		}
-		else if (tuple->type == TUPLE_INT)
-		{
-			int value = 0;
-			if(tuple->length == 1)
-			{
-				value = tuple->value->int8;
-			}
-			else if(tuple->length == 2)
-			{
-				value = tuple->value->int16;
-			}
-			else if(tuple->length == 4)
-			{
-				value = tuple->value->int32;
-			}
-			snprintf(row, 50, "[%u,%d]", (unsigned)tuple->key, value);
-		}
-		else if (tuple->type == TUPLE_CSTRING)
-		{
-			snprintf(row, 50, "[%u,%s]", (unsigned)tuple->key, tuple->value->cstring);
-		}
-		
-		strcat(buf, row);
-		tuple = dict_read_next(iter);
-	}
-	//APP_LOG(APP_LOG_LEVEL_DEBUG_VERBOSE, "dump_dict");
-	text_layer_set_text(&textLayer, buf);
-	
-}
 
 void failed(int32_t cookie, int http_status, void* context) 
 {
