@@ -178,13 +178,24 @@ void handle_main_disappear(Window *window)
 
 void handle_init(AppContextRef ctx) 
 {
-  (void)ctx;
-
   window_init(&window, "Sonos");
-  window_set_window_handlers(&window, (WindowHandlers) {
+  
+  // Init resources
+  resource_init_current_app(&APP_RESOURCES);
+	
+  window_set_window_handlers(&window, (WindowHandlers) 
+  {
         .appear = (WindowHandler)handle_main_appear,
         .disappear = (WindowHandler)handle_main_disappear
-    });
+  });
+  
+  // Init resources
+  resource_init_current_app(&APP_RESOURCES);
+    
+  // Load some bitmaps 
+  //heap_bitmap_init(&button_image_up, RESOURCE_ID_IMAGE_BUTTON_UP);
+  //heap_bitmap_init(&button_image_down, RESOURCE_ID_IMAGE_BUTTON_DOWN);
+  //heap_bitmap_init(&button_image_setup, RESOURCE_ID_IMAGE_BUTTON_SETUP);
   
   window_stack_push(&window, true /* Animated */);
 
