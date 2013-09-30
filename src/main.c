@@ -6,6 +6,7 @@
 #include "http.h"
 #include "util.h"
 #include "debug.h"
+#include "sonos_action_bar_layer.h"
 
 #define MY_UUID HTTP_UUID
 PBL_APP_INFO(MY_UUID, "Sonos Remote", "Cosmin", 1, 0, RESOURCE_ID_SONOS_APP_ICON, APP_INFO_STANDARD_APP);
@@ -20,12 +21,7 @@ SonosStatus sonosStatus = {.mute = false, .playing = false};
 
 Window window;
 TextLayer textLayer;
-ActionBarLayer action_bar;
-
-HeapBitmap button_image_prev;
-HeapBitmap button_image_next;
-HeapBitmap button_image_play;
-HeapBitmap button_image_pause;
+SonosActionBarLayer sonos_action_bar_layer;
 
 void failed(int32_t cookie, int http_status, void* context) 
 {
@@ -170,13 +166,13 @@ void click_config_provider(ClickConfig **config, Window *window)
 void handle_main_appear(Window *window)
 {
     // We need to add the action_bar when the main-window appears. If we do this in handle_init it picks up wrong window-bounds and the size doesn't fit.
-    action_bar_layer_add_to_window(&action_bar, window);
+    action_bar_layer_add_to_window(&sonos_action_bar_layer.action_bar_layer, window);
 }
 
 void handle_main_disappear(Window *window)
 {
     // Since we add the layer on each appear, we remove it on each disappear.
-    action_bar_layer_remove_from_window(&action_bar);
+    action_bar_layer_remove_from_window(&sonos_action_bar_layer.action_bar_layer);
 }
 
 // Standard app initialisation
@@ -199,10 +195,10 @@ void handle_init(AppContextRef ctx)
     
   // Load some bitmaps 
   //TODO: deinit
-  heap_bitmap_init(&button_image_next, RESOURCE_ID_IMAGE_NEXT);
-  heap_bitmap_init(&button_image_prev, RESOURCE_ID_IMAGE_PREV);
-  heap_bitmap_init(&button_image_play, RESOURCE_ID_IMAGE_PLAY);
-  heap_bitmap_init(&button_image_pause, RESOURCE_ID_IMAGE_PAUSE);
+  heap_bitmap_init(&sonos_action_bar_layer.button_image_next, RESOURCE_ID_IMAGE_NEXT);
+  heap_bitmap_init(&sonos_action_bar_layer.button_image_prev, RESOURCE_ID_IMAGE_PREV);
+  heap_bitmap_init(&sonos_action_bar_layer.button_image_play, RESOURCE_ID_IMAGE_PLAY);
+  heap_bitmap_init(&sonos_action_bar_layer.button_image_pause, RESOURCE_ID_IMAGE_PAUSE);
   
   window_stack_push(&window, true /* Animated */);
 
@@ -214,22 +210,22 @@ void handle_init(AppContextRef ctx)
   //window_set_click_config_provider(&window, (ClickConfigProvider) click_config_provider);
 
   // Initialize the action bar:
-  action_bar_layer_init(&action_bar);
+  action_bar_layer_init(&sonos_action_bar_layer.action_bar_layer);
   // Associate the action bar with the window:
   //action_bar_layer_add_to_window(&action_bar, &window);
   // Set the click config provider:
-  action_bar_layer_set_click_config_provider(&action_bar,
+  action_bar_layer_set_click_config_provider(&sonos_action_bar_layer.action_bar_layer,
                                              (ClickConfigProvider) click_config_provider);
   // Set the icons:
   // The loading the icons is omitted for brevity... See HeapBitmap.
   //action_bar_layer_set_icon(&action_bar, BUTTON_ID_UP, &my_icon_previous);
   //action_bar_layer_set_icon(&action_bar, BUTTON_ID_DOWN, &my_icon_next);
-  action_bar_layer_set_icon(&action_bar, BUTTON_ID_UP, &button_image_prev.bmp);
-  action_bar_layer_set_icon(&action_bar, BUTTON_ID_DOWN, &button_image_next.bmp);
-  action_bar_layer_set_icon(&action_bar, BUTTON_ID_SELECT, &button_image_play.bmp);
+  action_bar_layer_set_icon(&sonos_action_bar_layer.action_bar_layer, BUTTON_ID_UP, &sonos_action_bar_layer.button_image_prev.bmp);
+  action_bar_layer_set_icon(&sonos_action_bar_layer.action_bar_layer, BUTTON_ID_DOWN, &sonos_action_bar_layer.button_image_next.bmp);
+  action_bar_layer_set_icon(&sonos_action_bar_layer.action_bar_layer, BUTTON_ID_SELECT, &sonos_action_bar_layer.button_image_play.bmp);
   //action_bar_layer_set_icon(&action_bar, BUTTON_ID_SELECT, &button_image_pause.bmp);
   
-  layer_add_child(&window.layer, &action_bar.layer);
+  layer_add_child(&window.layer, &sonos_action_bar_layer.action_bar_layer.layer);
   
   http_set_app_id(SONOSREMOTE_APP_ID);
   http_register_callbacks((HTTPCallbacks){
