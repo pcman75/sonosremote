@@ -22,7 +22,10 @@ Window window;
 TextLayer textLayer;
 ActionBarLayer action_bar;
 
+HeapBitmap button_image_prev;
+HeapBitmap button_image_next;
 HeapBitmap button_image_play;
+HeapBitmap button_image_pause;
 
 void failed(int32_t cookie, int http_status, void* context) 
 {
@@ -195,14 +198,16 @@ void handle_init(AppContextRef ctx)
   resource_init_current_app(&APP_RESOURCES);
     
   // Load some bitmaps 
-  //heap_bitmap_init(&button_image_up, RESOURCE_ID_IMAGE_BUTTON_UP);
-  //heap_bitmap_init(&button_image_down, RESOURCE_ID_IMAGE_BUTTON_DOWN);
+  //TODO: deinit
+  heap_bitmap_init(&button_image_next, RESOURCE_ID_IMAGE_NEXT);
+  heap_bitmap_init(&button_image_prev, RESOURCE_ID_IMAGE_PREV);
   heap_bitmap_init(&button_image_play, RESOURCE_ID_IMAGE_PLAY);
+  heap_bitmap_init(&button_image_pause, RESOURCE_ID_IMAGE_PAUSE);
   
   window_stack_push(&window, true /* Animated */);
 
   text_layer_init(&textLayer, window.layer.frame);
-  debug("Sonos", 0);
+  
   text_layer_set_font(&textLayer, fonts_get_system_font(FONT_KEY_GOTHIC_18));
   layer_add_child(&window.layer, &textLayer.layer);
   // Attach our desired button functionality
@@ -219,7 +224,10 @@ void handle_init(AppContextRef ctx)
   // The loading the icons is omitted for brevity... See HeapBitmap.
   //action_bar_layer_set_icon(&action_bar, BUTTON_ID_UP, &my_icon_previous);
   //action_bar_layer_set_icon(&action_bar, BUTTON_ID_DOWN, &my_icon_next);
+  action_bar_layer_set_icon(&action_bar, BUTTON_ID_SELECT, &button_image_prev.bmp);
+  action_bar_layer_set_icon(&action_bar, BUTTON_ID_SELECT, &button_image_next.bmp);
   action_bar_layer_set_icon(&action_bar, BUTTON_ID_SELECT, &button_image_play.bmp);
+  action_bar_layer_set_icon(&action_bar, BUTTON_ID_SELECT, &button_image_pause.bmp);
   
   layer_add_child(&window.layer, &action_bar.layer);
   
