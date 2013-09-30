@@ -10,3 +10,6 @@ tools
 wscript
 waf
 *.command
+
+server/unidecode/
+server/requests/
