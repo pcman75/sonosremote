@@ -224,10 +224,10 @@ void handle_init(AppContextRef ctx)
   // The loading the icons is omitted for brevity... See HeapBitmap.
   //action_bar_layer_set_icon(&action_bar, BUTTON_ID_UP, &my_icon_previous);
   //action_bar_layer_set_icon(&action_bar, BUTTON_ID_DOWN, &my_icon_next);
-  action_bar_layer_set_icon(&action_bar, BUTTON_ID_SELECT, &button_image_prev.bmp);
-  action_bar_layer_set_icon(&action_bar, BUTTON_ID_SELECT, &button_image_next.bmp);
+  action_bar_layer_set_icon(&action_bar, BUTTON_ID_UP, &button_image_prev.bmp);
+  action_bar_layer_set_icon(&action_bar, BUTTON_ID_DOWN, &button_image_next.bmp);
   action_bar_layer_set_icon(&action_bar, BUTTON_ID_SELECT, &button_image_play.bmp);
-  action_bar_layer_set_icon(&action_bar, BUTTON_ID_SELECT, &button_image_pause.bmp);
+  //action_bar_layer_set_icon(&action_bar, BUTTON_ID_SELECT, &button_image_pause.bmp);
   
   layer_add_child(&window.layer, &action_bar.layer);
   
