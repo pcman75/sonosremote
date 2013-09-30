@@ -22,6 +22,8 @@ Window window;
 TextLayer textLayer;
 ActionBarLayer action_bar;
 
+HeapBitmap button_image_play;
+
 void failed(int32_t cookie, int http_status, void* context) 
 {
 	debug("Failed", http_status);
@@ -195,7 +197,7 @@ void handle_init(AppContextRef ctx)
   // Load some bitmaps 
   //heap_bitmap_init(&button_image_up, RESOURCE_ID_IMAGE_BUTTON_UP);
   //heap_bitmap_init(&button_image_down, RESOURCE_ID_IMAGE_BUTTON_DOWN);
-  //heap_bitmap_init(&button_image_setup, RESOURCE_ID_IMAGE_BUTTON_SETUP);
+  heap_bitmap_init(&button_image_play, RESOURCE_ID_IMAGE_PLAY);
   
   window_stack_push(&window, true /* Animated */);
 
@@ -217,6 +219,8 @@ void handle_init(AppContextRef ctx)
   // The loading the icons is omitted for brevity... See HeapBitmap.
   //action_bar_layer_set_icon(&action_bar, BUTTON_ID_UP, &my_icon_previous);
   //action_bar_layer_set_icon(&action_bar, BUTTON_ID_DOWN, &my_icon_next);
+  action_bar_layer_set_icon(&action_bar, BUTTON_ID_SELECT, &button_image_play.bmp);
+  
   layer_add_child(&window.layer, &action_bar.layer);
   
   http_set_app_id(SONOSREMOTE_APP_ID);

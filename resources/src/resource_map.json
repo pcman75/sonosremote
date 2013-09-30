@@ -1,14 +1,19 @@
 {
     "media": [
         {
-            "defName": "SONOS_APP_ICON",
+            "defName": "IMAGE_PLAY",
             "type": "png",
-            "file": "images/sonos.png"
+            "file": "images/play.png"
         },
         {
             "defName": "DUMMY",
             "type": "raw",
             "file": "data/resource_map.json"
+        },
+        {
+            "defName": "SONOS_APP_ICON",
+            "type": "png",
+            "file": "images/sonos.png"
         }
     ],
     "friendlyVersion": "VERSION",
